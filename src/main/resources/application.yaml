@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: dove-fetch
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@(DESCRIPTION_LIST=(LOAD_BALANCE=off)(FAILOVER=on)(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=on)(FAILOVER=on)(ADDRESS=(PROTOCOL=TCP)(HOST=10.1.85.166)(PORT=1521))(ADDRESS=(PROTOCOL=TCP)(HOST=10.1.85.167)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=epaydb))))
+    username: epaysch
+    password: epaysch
+  session:
+    store-type: redis
+    redis:
+      flush-mode: immediate
+      configure-action: none
+  redis:
+    cluster:
+      nodes: 10.1.85.160:7000,10.1.85.160:7001,10.1.85.160:7002,10.1.85.160:7003,10.1.85.160:7004,10.1.85.160:7005
+    password: Acca@1234
+    timeout: 5000
+    jedis:
+      pool:
+        max-active: 20
+        max-idle: 10
+        max-wait: 2000
+        min-idle: 0
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath:mapper/*.xml

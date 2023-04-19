@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dovepay.doveEditor.mapper.DeeeMapper">
+    <select id="getDeeeUserByName" resultType="com.dovepay.doveEditor.entity.DeeeUser">
+        SELECT * FROM DEEE_USER WHERE NAME = #{name}
+    </select>
+    <select id="insertDeeeAtcl" resultType="com.dovepay.doveEditor.entity.DeeeAtcl">
+        INSERT INTO DEEE_ATCL (TITLE,AUTHOR,EDITOR,TIME_CREATE,TIME_MODIFY,CONTENT,VERSION,ID)
+            VALUES (#{title}, #{author}, #{editor}, #{timeCreate}, #{timeModify}, #{content}, #{version}, #{id})
+    </select>
+    <select id="getDeeeAtclRowCount" resultType="int">
+        SELECT COUNT(*) FROM DEEE_ATCL
+    </select>
+    <select id="deleteDeeeAtclById">
+        DELETE FROM DEEE_ATCL WHERE ID = #{id}
+    </select>
+    <select id="getDeeeAtclById" resultType="com.dovepay.doveEditor.entity.DeeeAtcl">
+        SELECT * FROM DEEE_ATCL WHERE ID = #{id}
+    </select>
+    <select id="updateDeeeAtcl" resultType="com.dovepay.doveEditor.entity.DeeeAtcl">
+        UPDATE DEEE_ATCL x
+            SET x.TITLE = #{title}, x.AUTHOR = #{author}, x.EDITOR = #{editor}, x.TIME_MODIFY = #{timeModify}, x.CONTENT = #{content}, x.VERSION = #{version}
+            WHERE x.ID = #{id}
+    </select>
+</mapper>

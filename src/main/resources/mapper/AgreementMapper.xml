@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dovepay.doveEditor.mapper.AgreementMapper">
+    <select id="getAgreementNameById" resultType="com.dovepay.doveEditor.entity.TnetsignAgreement">
+        SELECT * FROM tnetsign_agreement WHERE ID = (SELECT DIC_NAME FROM TDATADIC t WHERE DIC_VALUE = #{id})
+    </select>
+</mapper>
