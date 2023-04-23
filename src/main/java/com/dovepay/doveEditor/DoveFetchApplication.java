@@ -7,7 +7,6 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 @SpringBootApplication
 @ServletComponentScan
 public class DoveFetchApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(DoveFetchApplication.class, args);
     }

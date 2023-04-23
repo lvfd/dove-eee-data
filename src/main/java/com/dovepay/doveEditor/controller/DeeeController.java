@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.dovepay.doveEditor.entity.DeeeAtcl;
 import com.dovepay.doveEditor.mapper.DeeeMapper;
 import com.dovepay.doveEditor.entity.DeeeUser;
+import org.apache.ibatis.mapping.Environment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +29,7 @@ public class DeeeController {
     public void setRedisTemplate(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
+
     @Resource
     private DeeeMapper deeeMapper;
     @PostMapping("/getUserByName")
@@ -47,23 +50,62 @@ public class DeeeController {
         return false;
     }
     @PutMapping("/article")
-    public Map<String, Object> insertArticle(@RequestBody Map<String, String> map) {
-        HashMap<String, Object> response = new HashMap<>();
+    public void insertArticle(@RequestBody Map<String, String> map, HttpServletResponse response) throws IOException {
+        setJson(response);
         try {
+            HashMap<String, Object> result = new HashMap<>();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
             String currentTime = simpleDateFormat.format(new Date());
             Timestamp timeCreate = Timestamp.valueOf(currentTime);
             String version = map.getOrDefault("version", "1.0.0");
             String articleId = map.getOrDefault("id", String.valueOf(deeeMapper.getDeeeAtclRowCount() + 1));
-            DeeeAtcl deeeAtcl = new DeeeAtcl(map.get("title"), map.get("author"), map.get("editor"), version, articleId, map.get("content"),timeCreate, timeCreate);
+            String title = map.getOrDefault("title", "");
+            String author = map.getOrDefault("author", "");
+            String editor = map.getOrDefault("editor", "");
+            String content = map.getOrDefault("content", "");
+            if (title.equals("")) {
+                result.put("msg", "error");
+                result.put("position", "title");
+                result.put("error", "标题不能为空");
+                response.setStatus(406);
+                response.getWriter().write(JSON.toJSONString(result));
+                return;
+            }
+            if (author.equals("")) {
+                result.put("msg", "error");
+                result.put("position", "author");
+                result.put("error", "作者不能为空");
+                response.setStatus(406);
+                response.getWriter().write(JSON.toJSONString(result));
+                return;
+            }
+            if (editor.equals("")) {
+                result.put("msg", "error");
+                result.put("position", "editor");
+                result.put("error", "编辑者不能为空");
+                response.setStatus(406);
+                response.getWriter().write(JSON.toJSONString(result));
+                return;
+            }
+            if (content.equals("")) {
+                result.put("msg", "error");
+                result.put("position", "content");
+                result.put("error", "内容不能为空");
+                response.setStatus(406);
+                response.getWriter().write(JSON.toJSONString(result));
+                return;
+            }
+            DeeeAtcl deeeAtcl = new DeeeAtcl(title, author, editor, version, articleId, content, timeCreate, timeCreate);
             deeeMapper.insertDeeeAtcl(deeeAtcl);
-            response.put("msg", "success");
-            response.put("newArticle", deeeAtcl);
-            return response;
+            result.put("msg", "success");
+            result.put("newArticle", deeeAtcl);
+            response.getWriter().write(JSON.toJSONString(result));
         } catch (Exception e) {
-            response.put("msg", "failed");
-            response.put("errorMsg", e);
-            return response;
+            HashMap<String, Object> exception = new HashMap<>();
+            exception.put("msg", "failed");
+            exception.put("errorMsg", e);
+            response.setStatus(406);
+            response.getWriter().write(JSON.toJSONString(exception));
         }
     }
     @DeleteMapping("/article")
@@ -107,5 +149,9 @@ public class DeeeController {
         response.put("msg", "success");
         response.put("username", JSON.parseObject(redisProperty).get("username"));
         return response;
+    }
+    private void setJson(HttpServletResponse response) {
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json; charset=utf-8");
     }
 }

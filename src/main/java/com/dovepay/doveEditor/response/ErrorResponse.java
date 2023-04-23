@@ -1,6 +1,10 @@
 package com.dovepay.doveEditor.response;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public class ErrorResponse {
     @JSONField(ordinal = 1)
@@ -37,5 +41,13 @@ public class ErrorResponse {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public static void sendError(HttpServletResponse response, ErrorResponse errorResponse) throws IOException {
+        response.setStatus(errorResponse.getCode());
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json; charset=utf-8");
+        response.getWriter().write(JSON.toJSONString(errorResponse));
+        response.getWriter().close();
     }
 }
