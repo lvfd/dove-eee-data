@@ -11,6 +11,9 @@
     <select id="getDeeeAtclRowCount" resultType="int">
         SELECT COUNT(*) FROM DEEE_ATCL
     </select>
+    <select id="getDeeeAtclList" resultType="com.dovepay.doveEditor.entity.DeeeAtclList">
+        SELECT * FROM DEEE_ATCL
+    </select>
     <select id="deleteDeeeAtclById">
         DELETE FROM DEEE_ATCL WHERE ID = #{id}
     </select>

@@ -4,16 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.dovepay.doveEditor.entity.DeeeAtcl;
 import com.dovepay.doveEditor.mapper.DeeeMapper;
 import com.dovepay.doveEditor.entity.DeeeUser;
-import org.apache.ibatis.mapping.Environment;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -49,12 +44,25 @@ public class DeeeController {
         if (map.get("password").equals(user.getPwd())) return true;
         return false;
     }
+    @GetMapping("/article")
+    public void getArticle(HttpServletResponse response) throws IOException {
+        setJson(response);
+        try {
+            HashMap<String, Object> result = new HashMap<>();
+            List<DeeeAtcl> list = deeeMapper.getDeeeAtclList();
+            result.put("msg", "success");
+            result.put("articleList", list);
+            response.getWriter().write(JSON.toJSONString(result));
+        } catch (Exception e) {
+            exceptionHandler(e, response);
+        }
+    }
     @PutMapping("/article")
     public void insertArticle(@RequestBody Map<String, String> map, HttpServletResponse response) throws IOException {
         setJson(response);
         try {
             HashMap<String, Object> result = new HashMap<>();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
             String currentTime = simpleDateFormat.format(new Date());
             Timestamp timeCreate = Timestamp.valueOf(currentTime);
             String version = map.getOrDefault("version", "1.0.0");
@@ -101,24 +109,30 @@ public class DeeeController {
             result.put("newArticle", deeeAtcl);
             response.getWriter().write(JSON.toJSONString(result));
         } catch (Exception e) {
-            HashMap<String, Object> exception = new HashMap<>();
-            exception.put("msg", "failed");
-            exception.put("errorMsg", e);
-            response.setStatus(406);
-            response.getWriter().write(JSON.toJSONString(exception));
+            exceptionHandler(e, response);
         }
     }
     @DeleteMapping("/article")
-    public Map<String, Object> deleteArticle(@RequestBody Map<String, String> map) {
-        HashMap<String, Object> response = new HashMap<>();
+    public void deleteArticle(@RequestParam(value = "id", required = false) String id, HttpServletResponse response) throws IOException {
+        HashMap<String, Object> result = new HashMap<>();
+        setJson(response);
+        if (id == null || id.equals("")) {
+            result.put("msg", "Not Acceptable");
+            result.put("reason", "id为空");
+            response.setStatus(406);
+            response.getWriter().write(JSON.toJSONString(result));
+            return;
+        }
         try {
-            deeeMapper.deleteDeeeAtclById(map.get("id"));
-            response.put("msg", "success");
-            return response;
+            deeeMapper.deleteDeeeAtclById(id);
+            result.put("msg", "success");
+            result.put("description", "删除id为"+id+"的文章");
+            response.getWriter().write(JSON.toJSONString(result));
         } catch (Exception e) {
-            response.put("msg", "failed");
-            response.put("errorMsg", e);
-            return response;
+            result.put("msg", "failed");
+            result.put("errorMsg", e);
+            response.setStatus(500);
+            response.getWriter().write(JSON.toJSONString(result));
         }
     }
     @PatchMapping("/article")
@@ -153,5 +167,12 @@ public class DeeeController {
     private void setJson(HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
+    }
+    private void exceptionHandler(Exception e, HttpServletResponse response) throws IOException {
+        HashMap<String, Object> exception = new HashMap<>();
+        exception.put("msg", "failed");
+        exception.put("errorMsg", e);
+        response.setStatus(406);
+        response.getWriter().write(JSON.toJSONString(exception));
     }
 }
