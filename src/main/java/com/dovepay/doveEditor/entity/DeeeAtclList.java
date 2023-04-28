@@ -9,6 +9,7 @@ public class DeeeAtclList {
     private String editor;
     private Timestamp timeCreate;
     private Timestamp timeModify;
+    private int hidden;
 
     public DeeeAtclList() {}
 
@@ -58,5 +59,13 @@ public class DeeeAtclList {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getHidden() {
+        return hidden;
+    }
+
+    public void setHidden(int hidden) {
+        this.hidden = hidden;
     }
 }

@@ -20,9 +20,31 @@
     <select id="getDeeeAtclById" resultType="com.dovepay.doveEditor.entity.DeeeAtcl">
         SELECT * FROM DEEE_ATCL WHERE ID = #{id}
     </select>
-    <select id="updateDeeeAtcl" resultType="com.dovepay.doveEditor.entity.DeeeAtcl">
-        UPDATE DEEE_ATCL x
-            SET x.TITLE = #{title}, x.AUTHOR = #{author}, x.EDITOR = #{editor}, x.TIME_MODIFY = #{timeModify}, x.CONTENT = #{content}, x.VERSION = #{version}
-            WHERE x.ID = #{id}
-    </select>
+    <update id="updateDeeeAtcl">
+        UPDATE DEEE_ATCL
+        <set>
+            <if test="requestBody.title != null">
+                TITLE = #{requestBody.title},
+            </if>
+            <if test="requestBody.author != null">
+                AUTHOR = #{requestBody.author},
+            </if>
+            <if test="requestBody.editor != null">
+                EDITOR = #{requestBody.editor},
+            </if>
+            <if test="requestBody.timeModify != null">
+                TIME_MODIFY = #{requestBody.timeModify},
+            </if>
+            <if test="requestBody.content != null">
+                CONTENT = #{requestBody.content},
+            </if>
+            <if test="requestBody.version != null">
+                VERSION = #{requestBody.version},
+            </if>
+            <if test="requestBody.hidden != null">
+                HIDDEN = #{requestBody.hidden},
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
 </mapper>

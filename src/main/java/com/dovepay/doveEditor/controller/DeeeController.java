@@ -136,16 +136,8 @@ public class DeeeController {
         }
     }
     @PatchMapping("/article")
-    public Map<String, Object> patchArticle(@RequestBody Map<String, String> map) {
-        HashMap<String, Object> response = new HashMap<>();
-        try{
-
-            return response;
-        } catch (Exception e) {
-            response.put("msg", "failed");
-            response.put("errorMsg", e);
-            return response;
-        }
+    public void patchArticle(@RequestParam Map<String, String> requestParam, @RequestBody Map<String, Object> requestBody) {
+        deeeMapper.updateDeeeAtcl(requestParam.get("id"), requestBody);
     }
     @GetMapping("/testSess")
     public Map<String, Object> responseSession(@CookieValue(required = false, name = "dove.eee.uid") String cookie) {
