@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.Objects;
 
-@WebFilter(urlPatterns = {"/dove-eee-data/testSess", "/dove-eee-data/article"}, filterName = "redisSessionFilter")
+@WebFilter(urlPatterns = {"/dove-eee-data/testSess", "/dove-eee-data/article", "/dove-eee-data/articleList"}, filterName = "redisSessionFilter")
 //@Order(1)
 public class RedisSessionFilter implements Filter {
 

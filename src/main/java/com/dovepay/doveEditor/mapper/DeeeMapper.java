@@ -17,5 +17,5 @@ public interface DeeeMapper {
     public void deleteDeeeAtclById(@Param("id") String id);
     public void updateDeeeAtcl(@Param("id") String id, Map<String, Object> requestBody);
     public void insertDeeeAtcl(DeeeAtcl deeeAtcl);
-    public int getDeeeAtclRowCount();
+    public Integer getDeeeAtclRowCount();
 }

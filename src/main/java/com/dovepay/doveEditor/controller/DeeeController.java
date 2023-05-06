@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.dovepay.doveEditor.entity.DeeeAtcl;
 import com.dovepay.doveEditor.mapper.DeeeMapper;
 import com.dovepay.doveEditor.entity.DeeeUser;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -44,14 +46,31 @@ public class DeeeController {
         if (map.get("password").equals(user.getPwd())) return true;
         return false;
     }
+    @GetMapping("/articleList")
+    public void getArticleList(@RequestParam Map<String, String> requestParam, HttpServletResponse response) throws IOException {
+        setJson(response);
+        HashMap<String, Object> result = new HashMap<>();
+        String pageNum = requestParam.getOrDefault("pageNum", "1");
+        String pageSize = requestParam.getOrDefault("pageSize", "10");
+        String orderBy = requestParam.getOrDefault("orderBy", "time_modify desc");
+        PageHelper.startPage(Integer.parseInt(pageNum), Integer.parseInt(pageSize), orderBy);
+        List<DeeeAtcl> list = deeeMapper.getDeeeAtclList();
+        result.put("msg", "success");
+        result.put("articleList", list);
+        PageInfo page = new PageInfo(list);
+        result.put("pageNum", page.getPageNum());
+        result.put("isHasPreviousPage", page.isHasPreviousPage());
+        result.put("isHasNextPage", page.isHasNextPage());
+        response.getWriter().write(JSON.toJSONString(result));
+    }
     @GetMapping("/article")
-    public void getArticle(HttpServletResponse response) throws IOException {
+    public void getArticle(@RequestParam Map<String, String> requestParam, HttpServletResponse response) throws IOException {
         setJson(response);
         try {
             HashMap<String, Object> result = new HashMap<>();
-            List<DeeeAtcl> list = deeeMapper.getDeeeAtclList();
+            DeeeAtcl deeeAtcl = deeeMapper.getDeeeAtclById((String)requestParam.get("id"));
             result.put("msg", "success");
-            result.put("articleList", list);
+            result.put("article", deeeAtcl);
             response.getWriter().write(JSON.toJSONString(result));
         } catch (Exception e) {
             exceptionHandler(e, response);
@@ -66,11 +85,12 @@ public class DeeeController {
             String currentTime = simpleDateFormat.format(new Date());
             Timestamp timeCreate = Timestamp.valueOf(currentTime);
             String version = map.getOrDefault("version", "1.0.0");
-            String articleId = map.getOrDefault("id", String.valueOf(deeeMapper.getDeeeAtclRowCount() + 1));
+            String articleId = map.getOrDefault("id", String.valueOf(deeeMapper.getDeeeAtclRowCount() == null? 1: deeeMapper.getDeeeAtclRowCount()+1));
             String title = map.getOrDefault("title", "");
             String author = map.getOrDefault("author", "");
             String editor = map.getOrDefault("editor", "");
             String content = map.getOrDefault("content", "");
+            String hidden = map.getOrDefault("hidden", "0");
             if (title.equals("")) {
                 result.put("msg", "error");
                 result.put("position", "title");
@@ -103,13 +123,14 @@ public class DeeeController {
                 response.getWriter().write(JSON.toJSONString(result));
                 return;
             }
-            DeeeAtcl deeeAtcl = new DeeeAtcl(title, author, editor, version, articleId, content, timeCreate, timeCreate);
+            DeeeAtcl deeeAtcl = new DeeeAtcl(title, author, editor, version, articleId, content, timeCreate, timeCreate, Integer.parseInt(hidden));
             deeeMapper.insertDeeeAtcl(deeeAtcl);
             result.put("msg", "success");
             result.put("newArticle", deeeAtcl);
             response.getWriter().write(JSON.toJSONString(result));
         } catch (Exception e) {
-            exceptionHandler(e, response);
+//            exceptionHandler(e, response);
+            throw e;
         }
     }
     @DeleteMapping("/article")

@@ -11,8 +11,10 @@ public class DeeeAtcl {
     private String content;
     private Timestamp timeCreate;
     private Timestamp timeModify;
+    private int hidden;
 
-    public DeeeAtcl(String title, String author, String editor, String version, String id, String content, Timestamp timeCreate, Timestamp timeModify) {
+    public DeeeAtcl() {}
+    public DeeeAtcl(String title, String author, String editor, String version, String id, String content, Timestamp timeCreate, Timestamp timeModify, int hidden) {
         this.title = title;
         this.author = author;
         this.editor = editor;
@@ -21,6 +23,7 @@ public class DeeeAtcl {
         this.content = content;
         this.timeCreate = timeCreate;
         this.timeModify = timeModify;
+        this.hidden = hidden;
     }
 
     public String getTitle() {
@@ -85,5 +88,13 @@ public class DeeeAtcl {
 
     public void setTimeModify(Timestamp timeModify) {
         this.timeModify = timeModify;
+    }
+
+    public int getHidden() {
+        return hidden;
+    }
+
+    public void setHidden(int hidden) {
+        this.hidden = hidden;
     }
 }

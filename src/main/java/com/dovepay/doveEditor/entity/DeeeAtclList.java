@@ -10,6 +10,7 @@ public class DeeeAtclList {
     private Timestamp timeCreate;
     private Timestamp timeModify;
     private int hidden;
+    private String version;
 
     public DeeeAtclList() {}
 
@@ -67,5 +68,13 @@ public class DeeeAtclList {
 
     public void setHidden(int hidden) {
         this.hidden = hidden;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }
